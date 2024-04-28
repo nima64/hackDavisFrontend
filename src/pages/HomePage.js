@@ -4,12 +4,26 @@ import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import AddIcon from "@mui/icons-material/Add";
 import Nav from "../components/Nav";
 import { Link } from "react-router-dom";
+import {
+  useLogoutFunction,
+  useRedirectFunctions,
+  withAuthInfo,
+} from "@propelauth/react";
+import AuthenticatedRequest from "../components/AuthenticatedRequest";
 
-function OpenCamera() {
-  return <Button variant="contained">Open Camera</Button>;
+function OpenCamera(props) {
+  return <Button {...props} variant="contained">Open Camera</Button>;
 }
+const SignInBtn = (props) => (
+  <Button onClick={props.onClick} variant="contained" style={{ textDecoration: "none" }}>
+      Sign In
+  </Button>
+);
 
-const HomePage = () => {
+const HomePage = withAuthInfo(({ isLoggedIn }) => {
+  const logoutFn = useLogoutFunction();
+  const { redirectToSignupPage, redirectToLoginPage } = useRedirectFunctions();
+
   return (
     <div className="App">
       <header className="App-header">
@@ -56,14 +70,10 @@ const HomePage = () => {
         </div>
         <div className="row">
           <div className="text-center">
-            <Button variant="contained" style={{ textDecoration: "none" }}>
-              <Link
-                to="/signin"
-                style={{ color: "inherit", textDecoration: "inherit" }}
-              >
-                Sign In
-              </Link>
-            </Button>
+            {
+              isLoggedIn ? 
+              "logged in":(<SignInBtn onClick={redirectToLoginPage}/>) 
+            }
           </div>
         </div>
       </div>
@@ -79,6 +89,6 @@ const HomePage = () => {
       ></script>
     </div>
   );
-};
+});
 
 export default HomePage;
