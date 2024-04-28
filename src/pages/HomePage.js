@@ -1,5 +1,5 @@
-import  React, {useState, useEffect} from "react";
-import Button from "@mui/material/Button";
+import React, { useState, useEffect } from "react";
+import { Button, Box } from "@mui/material";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import AddIcon from "@mui/icons-material/Add";
 import Nav from "../components/Nav";
@@ -14,11 +14,19 @@ import Camera from "../components/Camera";
 import AuthenticatedRequest from "../components/AuthenticatedRequest";
 
 function OpenCamera(props) {
-  return <Button {...props} variant="contained">Open Camera</Button>;
+  return (
+    <Button {...props} variant="contained">
+      Open Camera
+    </Button>
+  );
 }
 const SignInBtn = (props) => (
-  <Button onClick={props.onClick} variant="contained" style={{ textDecoration: "none" }}>
-      Sign In
+  <Button
+    onClick={props.onClick}
+    variant="contained"
+    style={{ textDecoration: "none" }}
+  >
+    Sign In
   </Button>
 );
 
@@ -26,8 +34,6 @@ const videoConstraints = {
   width: 200,
   height: 200,
 };
-
-
 
 const HomePage = withAuthInfo(({ isLoggedIn }) => {
   const logoutFn = useLogoutFunction();
@@ -51,46 +57,34 @@ const HomePage = withAuthInfo(({ isLoggedIn }) => {
       </header>
       <div>
         <Nav />
+
         <div className="row">
-          <div className="p-5 mx-auto text-center col-md-8">
-            <h1 className="fw-bolder">Welcome</h1>
+          <div className="text-center">
+            {isLoggedIn ? (
+              <SignInBtn onClick={redirectToLoginPage} />
+            ) : (
+              <>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "100vh", // Adjust the height as needed
+                  }}
+                >
+                  <div>
+                    <Camera />
+                  </div>
+                </Box>
+              </>
+            )}
           </div>
         </div>
-        <div className="row">
-          <div className="mx-auto text-center col">
-            <CameraAltIcon style={{ fontSize: "4rem", fill: "green" }} />
-          </div>
-          <div className="col">
-            <h3>Scan your item</h3>
-          </div>
-        </div>
-        <div className="row m-5">
-          <div className="mx-auto text-center col">
-            <AddIcon style={{ fill: "green", fontSize: "6rem" }} />
-          </div>
-          <div className="col">
-            <h3>We can tell if the item can be recycled</h3>
-          </div>
-        </div>
-        <div className="row m-5">
+        {/* <div className="row m-5">
           <div className="mx-auto text-center ">
             <Button variant="contained">Open Camera</Button>
           </div>
-        </div>
-        <div className="row">
-          <div className="text-center">
-            {
-              isLoggedIn ? 
-              "":(
-             <>
-              ReactCam
-              <SignInBtn onClick={redirectToLoginPage}/>
-             </> 
-              ) 
-            }
-            <Camera/>
-          </div>
-        </div>
+        </div> */}
       </div>
       <script
         src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
