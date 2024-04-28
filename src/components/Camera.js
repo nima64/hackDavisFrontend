@@ -1,15 +1,17 @@
 import React, { useCallback, useRef, useState } from "react";
 import Webcam from "react-webcam";
-import { Stack, Button } from "@mui/material";
+import { Stack, Button, Modal } from "@mui/material";
 import axios from "axios";
-
 
 function WebcamImage() {
   const [img, setImg] = useState(null);
 
-  
   const webcamRef = useRef(null);
   const [file, setFile] = useState(null);
+  const [uploadResult, setUploadResult] = useState(null);
+  const [openModal, setOpenModal] = useState(null);
+  const handleClose = () => setOpenModal(false);
+
   const btnStyles = {
     borderRadius: 16, // Rounded corners
     backgroundColor: "#20c997", // Pastel green color
@@ -46,9 +48,12 @@ function WebcamImage() {
         formData.append("file", jpegBlob, "image.jpg"); // Append the converted JPEG blob
 
         // Use Axios to send a POST request
-        axios.post("http://127.0.0.1:8000/send-image/", formData)
+        axios
+          .post("http://127.0.0.1:8000/send-image/", formData)
           .then((response) => {
             console.log("Success:", response.data);
+            setUploadResult(response.data);
+            setOpenModal(true);
           })
           .catch((error) => {
             console.error("Error:", error);
@@ -57,36 +62,40 @@ function WebcamImage() {
         console.error("An error occurred:", error);
       }
     }
-}
+  }
 
-// Helper function to convert any image Blob to a JPEG Blob
-function convertBlobToJPEG(blob) {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    const url = URL.createObjectURL(blob);
+  // Helper function to convert any image Blob to a JPEG Blob
+  function convertBlobToJPEG(blob) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      const url = URL.createObjectURL(blob);
 
-    img.onload = () => {
-      URL.revokeObjectURL(url);
-      const canvas = document.createElement('canvas');
-      canvas.width = img.width;
-      canvas.height = img.height;
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
 
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0);
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0);
 
-      canvas.toBlob((jpegBlob) => {
-        resolve(jpegBlob);
-      }, 'image/jpeg', 0.9); // Adjust JPEG quality as needed
-    };
+        canvas.toBlob(
+          (jpegBlob) => {
+            resolve(jpegBlob);
+          },
+          "image/jpeg",
+          0.9
+        ); // Adjust JPEG quality as needed
+      };
 
-    img.onerror = () => {
-      URL.revokeObjectURL(url);
-      reject(new Error('Could not load the image'));
-    };
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        reject(new Error("Could not load the image"));
+      };
 
-    img.src = url;
-  });
-}
+      img.src = url;
+    });
+  }
 
   // async function uploadImage(imageSrc) {
   //   if (!imageSrc) {
@@ -174,6 +183,29 @@ function convertBlobToJPEG(blob) {
             <Button onClick={() => uploadImage(img)} sx={btnStyles}>
               Confirm?
             </Button>
+            <Modal
+              open={openModal}
+              onClose={handleClose}
+              aria-labelledby="simple-modal-title"
+              aria-describedby="simple-modal-description"
+            >
+              <div
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                  backgroundColor: "white",
+                  padding: 20,
+                }}
+              >
+                <h2 id="simple-modal-title">Upload Result</h2>
+                <div id="simple-modal-description">
+                  <pre>{JSON.stringify(uploadResult, null, 2)}</pre>
+                </div>
+                <Button onClick={handleClose}>Close</Button>
+              </div>
+            </Modal>
             <Button onClick={() => setImg(null)} sx={btnStyles}>
               Retake
             </Button>
