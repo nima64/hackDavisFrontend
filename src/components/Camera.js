@@ -3,8 +3,11 @@ import Webcam from "react-webcam";
 import { Stack, Button } from "@mui/material";
 import axios from "axios";
 
+
 function WebcamImage() {
   const [img, setImg] = useState(null);
+
+  
   const webcamRef = useRef(null);
   const [file, setFile] = useState(null);
   const btnStyles = {
@@ -30,30 +33,89 @@ function WebcamImage() {
     if (!imageSrc) {
       alert("No image found.");
     } else {
-      const image = await fetch(imageSrc);
-      const imageBlob = await image.blob();
-      //const imageURL = URL.createObjectURL(imageBlob);
-      // const link = document.createElement("a");
-      // link.href = imageURL;
-      // link.download = "image file name here";
-      // document.body.appendChild(link);
-      // link.click();
-      // document.body.removeChild(link);
+      try {
+        // Fetch the image from the source
+        const response = await fetch(imageSrc);
+        const imageBlob = await response.blob();
 
-      const formData = new FormData();
-      formData.append("file", imageBlob);
-      console.log(imageBlob);
-      axios
-        .post("http://localhost:8000/send-image/", formData)
-        .then((response) => {
-          console.log("Success:", response.data);
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-        });
-      console.log(imageBlob);
+        // Convert blob to JPEG
+        const jpegBlob = await convertBlobToJPEG(imageBlob);
+
+        // Prepare the form data
+        const formData = new FormData();
+        formData.append("file", jpegBlob, "image.jpg"); // Append the converted JPEG blob
+
+        // Use Axios to send a POST request
+        axios.post("http://127.0.0.1:8000/send-image/", formData)
+          .then((response) => {
+            console.log("Success:", response.data);
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      } catch (error) {
+        console.error("An error occurred:", error);
+      }
     }
-  }
+}
+
+// Helper function to convert any image Blob to a JPEG Blob
+function convertBlobToJPEG(blob) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(blob);
+
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+
+      canvas.toBlob((jpegBlob) => {
+        resolve(jpegBlob);
+      }, 'image/jpeg', 0.9); // Adjust JPEG quality as needed
+    };
+
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error('Could not load the image'));
+    };
+
+    img.src = url;
+  });
+}
+
+  // async function uploadImage(imageSrc) {
+  //   if (!imageSrc) {
+  //     alert("No image found.");
+  //   } else {
+  //     const image = await fetch(imageSrc);
+  //     // const imageBlob = await image.blob();
+  //     //const imageURL = URL.createObjectURL(imageBlob);
+  //     // const link = document.createElement("a");
+  //     // link.href = imageURL;
+  //     // link.download = "image file name here";
+  //     // document.body.appendChild(link);
+  //     // link.click();
+  //     // document.body.removeChild(link);
+
+  //     const formData = new FormData();
+  //     formData.append("file", imageBlob);
+  //     console.log(imageBlob);
+  //     axios
+  //       .post("http://127.0.0.1:8000/send-image/", formData)
+  //       .then((response) => {
+  //         console.log("Success:", response.data);
+  //       })
+  //       .catch((error) => {
+  //         console.error("Error:", error);
+  //       });
+  //     console.log(imageBlob);
+  //   }
+  // }
 
   const capture = useCallback(() => {
     const imageSrc = webcamRef.current.getScreenshot();
