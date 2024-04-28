@@ -1,4 +1,4 @@
-import * as React from "react";
+import  React, {useState, useEffect} from "react";
 import Button from "@mui/material/Button";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import AddIcon from "@mui/icons-material/Add";
@@ -9,6 +9,8 @@ import {
   useRedirectFunctions,
   withAuthInfo,
 } from "@propelauth/react";
+// import Webcam from "react-webcam";
+import Camera from "../components/Camera";
 import AuthenticatedRequest from "../components/AuthenticatedRequest";
 
 function OpenCamera(props) {
@@ -19,6 +21,13 @@ const SignInBtn = (props) => (
       Sign In
   </Button>
 );
+
+const videoConstraints = {
+  width: 200,
+  height: 200,
+};
+
+
 
 const HomePage = withAuthInfo(({ isLoggedIn }) => {
   const logoutFn = useLogoutFunction();
@@ -72,7 +81,12 @@ const HomePage = withAuthInfo(({ isLoggedIn }) => {
           <div className="text-center">
             {
               isLoggedIn ? 
-              "logged in":(<SignInBtn onClick={redirectToLoginPage}/>) 
+              <Camera/>:(
+             <>
+              ReactCam
+              <SignInBtn onClick={redirectToLoginPage}/>
+             </> 
+              ) 
             }
           </div>
         </div>
