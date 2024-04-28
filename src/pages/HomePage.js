@@ -4,6 +4,9 @@ import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import AddIcon from "@mui/icons-material/Add";
 import Nav from "../components/Nav";
 import { Link } from "react-router-dom";
+import btnStyles from "../components/roundedStyle";
+
+
 import {
   useLogoutFunction,
   useRedirectFunctions,
@@ -131,9 +134,26 @@ const HomePage = () => {
       <div>
         {/* <Nav /> */}
 
-        <div className="row">
-          <div className="text-center">
-            <CameraApiAuth />
+        <div style={{maxWidth:"900px"}} className="row mx-auto p-3 m-5">
+          <div>
+            <h1 className="text-center p-5">Accurately identify and sort your trash</h1>
+          </div>
+
+          <div className="col">
+            <img style={{maxWidth:"500px"}}src="./classes.png"/>
+          </div>
+          <div className="col">
+
+          <div style={{marginTop: "3rem"}}>
+            <div className="row p-4">
+              <Button sx={btnStyles}>Login</Button>
+
+            </div>
+            <div className="row p-4">
+              <Button sx={btnStyles}>Sign Up</Button>
+            </div>
+
+          </div>
           </div>
         </div>
         {/* <div className="row m-5">
