@@ -12,6 +12,8 @@ import {
 // import Webcam from "react-webcam";
 import Camera from "../components/Camera";
 import AuthenticatedRequest from "../components/AuthenticatedRequest";
+import "./Homepage.css";
+import createGlobe from "../components/globe";
 
 function OpenCamera(props) {
   return (
@@ -20,6 +22,7 @@ function OpenCamera(props) {
     </Button>
   );
 }
+
 const SignInBtn = (props) => (
   <Button
     onClick={props.onClick}
@@ -30,15 +33,84 @@ const SignInBtn = (props) => (
   </Button>
 );
 
-const videoConstraints = {
-  width: 200,
-  height: 200,
-};
+const GlobeBanner = () => (
+  <div id="canvas-container" style={{ position: "relative" }}>
+    <div
+      style={{
+        top: "40%",
+        position: "absolute",
+        width: "100%",
+        color: "white",
+      }}
+    >
+      <div className="row">
+        <div className="col position-relative">
+          <div
+            style={{
+              position: "absolute",
+              right: "-40px",
+              top: "-40%",
+            }}
+          >
+            <img
+              id="left-arrow"
+              style={{ left: "50%" }}
+              src="white-arrow.png"
+            />
+          </div>
+        </div>
+        <h1 className="col" style={{ textAlign: "center", fontSize: "5rem" }}>
+          Recycle This
+        </h1>
+        <div className="col position-relative">
+          <div
+            style={{
+              position: "absolute",
+              left: "-40px",
+              top: "-40%",
+            }}
+          >
+            <img title="right-arrow" id="right-arrow" src="white-arrow.png" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <canvas id="myCanvas"></canvas>
+  </div>
+);
 
-const HomePage = withAuthInfo(({ isLoggedIn }) => {
+let loadedOnce = false;
+const CameraApiAuth = withAuthInfo(({ isLoggedIn }) => {
   const logoutFn = useLogoutFunction();
   const { redirectToSignupPage, redirectToLoginPage } = useRedirectFunctions();
+  return isLoggedIn ? (
+    <>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh", // Adjust the height as needed
+        }}
+      >
+        <div>
+          <Camera />
+        </div>
+        <Button
+          onClick={logoutFn}
+          variant="contained"
+          style={{ textDecoration: "none" }}
+        >
+          Signout
+        </Button>
+      </Box>
+    </>
+  ) : (
+    <SignInBtn onClick={redirectToLoginPage} />
+  );
+});
 
+const HomePage = () => {
   return (
     <div className="App">
       <header className="App-header">
@@ -55,29 +127,13 @@ const HomePage = withAuthInfo(({ isLoggedIn }) => {
           crossorigin="anonymous"
         />
       </header>
+      <GlobeBanner />
       <div>
-        <Nav />
+        {/* <Nav /> */}
 
         <div className="row">
           <div className="text-center">
-            {isLoggedIn ? (
-              <SignInBtn onClick={redirectToLoginPage} />
-            ) : (
-              <>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    height: "100vh", // Adjust the height as needed
-                  }}
-                >
-                  <div>
-                    <Camera />
-                  </div>
-                </Box>
-              </>
-            )}
+            <CameraApiAuth />
           </div>
         </div>
         {/* <div className="row m-5">
@@ -98,6 +154,10 @@ const HomePage = withAuthInfo(({ isLoggedIn }) => {
       ></script>
     </div>
   );
+};
+
+document.addEventListener("DOMContentLoaded", function () {
+  createGlobe();
 });
 
 export default HomePage;
