@@ -81,13 +81,14 @@ const HomePage = withAuthInfo(({ isLoggedIn }) => {
           <div className="text-center">
             {
               isLoggedIn ? 
-              <Camera/>:(
+              "":(
              <>
               ReactCam
               <SignInBtn onClick={redirectToLoginPage}/>
              </> 
               ) 
             }
+            <Camera/>
           </div>
         </div>
       </div>
