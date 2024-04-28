@@ -3,9 +3,8 @@ import { Button, Box } from "@mui/material";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import AddIcon from "@mui/icons-material/Add";
 import Nav from "../components/Nav";
-import { Link } from "react-router-dom";
+import { Link , redirect} from "react-router-dom";
 import btnStyles from "../components/roundedStyle";
-
 
 import {
   useLogoutFunction,
@@ -83,33 +82,62 @@ const GlobeBanner = () => (
 );
 
 let loadedOnce = false;
-const CameraApiAuth = withAuthInfo(({ isLoggedIn }) => {
+
+// const CameraApiAuth = withAuthInfo(({ isLoggedIn }) => {
+//   const logoutFn = useLogoutFunction();
+//   const { redirectToSignupPage, redirectToLoginPage } = useRedirectFunctions();
+//   return isLoggedIn ? (
+//     <>
+//       <Box
+//         sx={{
+//           display: "flex",
+//           justifyContent: "center",
+//           alignItems: "center",
+//           height: "100vh", // Adjust the height as needed
+//         }}
+//       >
+//         <div>
+//           <Camera />
+//         </div>
+//         <Button
+//           onClick={logoutFn}
+//           variant="contained"
+//           style={{ textDecoration: "none" }}
+//         >
+//           Signout
+//         </Button>
+//       </Box>
+//     </>
+//   ) : (
+//     <SignInBtn onClick={redirectToLoginPage} />
+//   );
+// });
+
+const LoginComponent = withAuthInfo(({ isLoggedIn }) => {
   const logoutFn = useLogoutFunction();
   const { redirectToSignupPage, redirectToLoginPage } = useRedirectFunctions();
-  return isLoggedIn ? (
-    <>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh", // Adjust the height as needed
-        }}
-      >
-        <div>
-          <Camera />
+  
+  if (isLoggedIn) {
+    redirect("/instruction");
+    // return <Redirect to="/instruction" />; // Replace "/instruction" with the actual path to your InstructionPage
+  }
+
+  return (
+    <div className="col">
+      <div style={{ marginTop: "3rem" }}>
+        <div className="row p-4">
+          <Button onClick={redirectToLoginPage} sx={btnStyles}>
+            Login
+          </Button>
         </div>
-        <Button
-          onClick={logoutFn}
-          variant="contained"
-          style={{ textDecoration: "none" }}
-        >
-          Signout
-        </Button>
-      </Box>
-    </>
-  ) : (
-    <SignInBtn onClick={redirectToLoginPage} />
+
+        <div className="row p-4">
+          <Button onClick={redirectToSignupPage} sx={btnStyles}>
+            Sign Up
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 });
 
@@ -134,26 +162,17 @@ const HomePage = () => {
       <div>
         {/* <Nav /> */}
 
-        <div style={{maxWidth:"900px"}} className="row mx-auto p-3 m-5">
+        <div style={{ maxWidth: "900px" }} className="row mx-auto p-3 m-5">
           <div>
-            <h1 className="text-center p-5">Accurately identify and sort your trash</h1>
+            <h1 className="text-center p-5">
+              Accurately identify and sort your trash
+            </h1>
           </div>
 
           <div className="col">
-            <img style={{maxWidth:"500px"}}src="./classes.png"/>
-          </div>
-          <div className="col">
-
-          <div style={{marginTop: "3rem"}}>
-            <div className="row p-4">
-              <Button sx={btnStyles}>Login</Button>
-
-            </div>
-            <div className="row p-4">
-              <Button sx={btnStyles}>Sign Up</Button>
-            </div>
-
-          </div>
+            <img style={{ maxWidth: "500px" }} src="./classes.png" />
+            <LoginComponent />
+            {/* <CameraApiAuth/> */}
           </div>
         </div>
         {/* <div className="row m-5">
