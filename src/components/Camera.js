@@ -27,8 +27,11 @@ function WebcamImage() {
 
   const capture = useCallback(() => {
     const imageSrc = webcamRef.current.getScreenshot();
-    setImg(imageSrc);
-    downloadImage(imageSrc);
+    
+    if (imageSrc !== null) {
+      setImg(imageSrc);
+      downloadImage(imageSrc);
+    }
   }, [webcamRef]);
     const [isFacingFoward, setIsFacingForward] = useState(false);
 
